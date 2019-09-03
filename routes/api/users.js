@@ -41,8 +41,25 @@ router.post(
 
       await user.save();
 
-      res.status(201).json('ok');
+      const payload = {
+        user: {
+          id: user.id
+        }
+      };
+
+      jwt.sign(
+        payload,
+        config.get('jwtSecret'),
+        {
+          expiresIn: 360000
+        },
+        (err, token) => {
+          if (err) throw err;
+          res.status(201).json({ token });
+        }
+      );
     } catch (err) {
+      console.log(err);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
